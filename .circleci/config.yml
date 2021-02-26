@@ -44,7 +44,7 @@ jobs:
               -Dsonar.host.url="https://sonarcloud.io/" \
               -Dsonar.login=$token \
               -Dsonar.java.binaries=. \
-              -Dsonar.organization="suma" \
-              -Dsonar.projectKey="nubox-spa_PruebaDevops2" \
+              -Dsonar.organization="sebameruane" \
+              -Dsonar.projectKey="sebameruane_DevopsPrueba2" \
               -Dsonar.sources="." \
               -Dsonar.exclusions="**/*.yaml,**/*.yml"
