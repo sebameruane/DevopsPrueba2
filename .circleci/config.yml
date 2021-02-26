@@ -20,7 +20,8 @@ jobs:
             apk update
             apk add gradle
             apk add --no-cache nodejs zip openjdk11-jre-headless
-
+            apk add curl
+            apk add jq
             # se descargan e instalan las dependencias
       - run:
           name: "compile project"
