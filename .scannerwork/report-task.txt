@@ -1,0 +1,6 @@
+projectKey=edu
+serverUrl=http://52.205.80.37
+serverVersion=8.6.1.40680
+dashboardUrl=http://52.205.80.37/dashboard?id=edu
+ceTaskId=AXfO7b2dj5-JV7goI4Sg
+ceTaskUrl=http://52.205.80.37/api/ce/task?id=AXfO7b2dj5-JV7goI4Sg

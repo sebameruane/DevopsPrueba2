@@ -1,0 +1,50 @@
+version: 2.1
+
+workflows:
+  build:
+    jobs:
+      - build:
+          context:
+            - sonarCloud
+jobs:
+  build:
+    docker:
+      - image: alpine:latest
+    steps:
+      - checkout
+
+      # se descargan e instalan las dependencias
+      - run:
+          name: "Setup environment"
+          command: |
+            apk update
+            apk add gradle
+            apk add --no-cache nodejs zip openjdk11-jre-headless
+
+            # se descargan e instalan las dependencias
+      - run:
+          name: "compile project"
+          command: |
+            gradle clean build test jacocoTestReport
+            
+      # se descarga el cliente de scan de sonarqube
+      - run:
+          name: "Install Sonarqube scanner"
+          command: |
+            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873.zip
+            unzip sonar-scanner-cli-4.2.0.1873.zip
+
+# se ejecuta el análisis invocando al cliente y especificando como argumentos y como variables de entorno (especificadas en CCI)
+#${CIRCLE_USERNAME}_${CIRCLE_PROJECT_REPONAME}
+      - run:
+          name: Code analysis
+          command: |
+            export SONAR_RUNNER_OPTS="-Xms1024m -Xmx4096m"
+            eval ./sonar-scanner-4.2.0.1873/bin/sonar-scanner \
+              -Dsonar.host.url="https://sonarcloud.io/" \
+              -Dsonar.login=$token \
+              -Dsonar.java.binaries=. \
+              -Dsonar.organization="suma" \
+              -Dsonar.projectKey="nubox-spa_PruebaDevops2" \
+              -Dsonar.sources="." \
+              -Dsonar.exclusions="**/*.yaml,**/*.yml"

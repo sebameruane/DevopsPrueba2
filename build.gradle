@@ -1,0 +1,56 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'jacoco'
+    id "org.sonarqube" version "3.1.1"
+}
+
+group = 'com.nubox.core'
+version = '0.0.2-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.4'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compile group: 'net.sf.dozer', name: 'dozer', version: '5.5.1'
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile group: 'junit', name: 'junit', version: '4.13'
+    compile group: 'com.github.pagehelper', name: 'pagehelper', version: '5.2.0'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.4.2'
+
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+sonarqube {
+  properties {
+    property 'sonar.projectName', projectName
+    property 'sonar.organization', suma
+    property 'sonar.projectKey', nubox-spa_PruebaDevops2
+  }
+}
+
+test {
+    useJUnitPlatform()
+}
+
