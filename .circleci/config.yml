@@ -1,13 +1,7 @@
 version: 2.1
-
-workflows:
-  build:
-    jobs:
-      - build:
-          context:
-            - sonarCloud
 orbs:
   artifactory-orb: jfrog/artifactory-orb@1.0.1
+  aws-ecr: circleci/aws-ecr@6.15.3
 jobs:
   build:
     docker:
@@ -52,30 +46,30 @@ jobs:
               -Dsonar.sources="." \
               -Dsonar.exclusions="**/*.yaml,**/*.yml"
 
-publish-on-artifactory:
+  publish-on-artifactory:
     docker:
       - image: circleci/openjdk:11-jdk
-
     working_directory: ~/repo
-
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            - v1-dependencies-
-      
       - run:
           name: Install jFrog CLI
           command: curl -fL https://getcli.jfrog.io | sh
-
-      - run: gradle build
-
       - run: ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
-
       - run: chmod +x gradlew
-      
       - run: ./jfrog rt gradle-config --use-wrapper=true --repo-resolve=remote-backend-dev --server-id-resolve=Default-Server --repo-deploy=local-backend-dev --server-id-deploy=Default-Server
-
       - run: ./jfrog rt gradle clean build artifactoryPublish -b build.gradle
+
+
+workflows:
+  build_and_test:
+    jobs:
+      - build:
+          context:
+            - sonarCloud
+      - publish-on-artifactory:
+         requires:
+            - build
+         filters:
+            branches:
+              only: develop
