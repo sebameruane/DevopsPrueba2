@@ -56,7 +56,7 @@ jobs:
           name: Install jFrog CLI
           command: wget https://dl.bintray.com/jfrog/jfrog-cli-go/1.7.1/jfrog-cli-linux-amd64/jfrog
 
-      - run: chmod +x jfrog
+      - run: chmod +x ./jfrog
       - run: gradle build
 
       - run: ./jfrog rt --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY
