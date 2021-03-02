@@ -62,11 +62,11 @@ jobs:
 
       - run: ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY
 
-     # - run: chmod +x gradlew
+      - run: chmod +x gradlew
       
-      #- run: ./jfrog rt gradle-config --use-wrapper=true --repo-resolve=remote-backend-dev --server-id-resolve=Default-Server --repo-deploy=local-backend-dev --server-id-deploy=Default-Server
+      - run: ./jfrog rt gradle-config --use-wrapper=true --repo-resolve=remote-backend-dev --server-id-resolve=Default-Server --repo-deploy=local-backend-dev --server-id-deploy=Default-Server
 
-     # - run: ./jfrog rt gradle clean build artifactoryPublish -b build.gradle
+      - run: ./jfrog rt gradle clean build artifactoryPublish -b build.gradle
 
 
 workflows:
