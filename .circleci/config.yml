@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  artifactory-orb: jfrog/artifactory-orb@1.0.1
+  artifactory: circleci/artifactory@1.0.0
   aws-ecr: circleci/aws-ecr@6.15.3
 jobs:
   build:
@@ -17,12 +17,23 @@ jobs:
       - checkout
       - run:
           name: Install jFrog CLI
-          command: wget https://dl.bintray.com/jfrog/jfrog-cli-go/1.9.0/jfrog-cli-linux-amd64/jfrog
+          command: |
+            echo "Checking for existence of CLI"
+            set +e
+            jfrog -v
+            if [ $? -gt 0 ]; then
+              echo "Not found, installing latest"
+              curl -fL https://getcli.jfrog.io | sh
+              chmod a+x jfrog && sudo mv jfrog /usr/local/bin
+            else
+              echo "CLI exists, skipping install"
+            fi
+        
 
-      - run: chmod +x ./jfrog
-      - run: gradle build
+      #- run: chmod +x ./jfrog
+      #- run: gradle build
 
-      - run: ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY
+      - run: jfrog rt c --user="service-backend" --url="https://sumasaas.jfrog.io/artifactory/" --apikey="AKCp8ihLMESAg4orKmLAikXT7odXVXUqD58eK8nkYV4LrtemKiNpWBnxe1ZB7cnQpMUHssGDC" --interactive=false
 
       - run: chmod +x gradlew
       
