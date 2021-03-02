@@ -54,11 +54,10 @@ jobs:
       - checkout
       - run:
           name: Install jFrog CLI
-          command: sudo chmod -R 777 /var/opt/
-          
-      - run: curl -fL https://getcli.jfrog.io | sh
+          command: wget https://dl.bintray.com/jfrog/jfrog-cli-go/1.7.1/jfrog-cli-linux-amd64/jfrog
 
-      - run: gradle clean build
+      - run: chmod +x jfrog
+      - run: gradle build
 
       - run: ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY
 
