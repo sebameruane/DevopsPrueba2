@@ -59,7 +59,7 @@ jobs:
       - run: chmod +x jfrog
       - run: gradle build
 
-      - run: ./jfrog --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY
+      - run: ./jfrog rt --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY
 
       - run: chmod +x gradlew
       
