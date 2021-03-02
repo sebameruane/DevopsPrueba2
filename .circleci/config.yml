@@ -28,18 +28,19 @@ jobs:
             else
               echo "CLI exists, skipping install"
             fi
-        
+      - run: cd /usr/local/bin
+      - run: chmod +x /usr/local/bin
 
       #- run: chmod +x ./jfrog
       #- run: gradle build
-
-      - run: ./jfrog rt c --user=service-backend --url=https://sumasaas.jfrog.io/artifactory/ --apikey=AKCp8ihLMESAg4orKmLAikXT7odXVXUqD58eK8nkYV4LrtemKiNpWBnxe1ZB7cnQpMUHssGDC --interactive=false
+     
+      - run: jfrog rt c --user=service-backend --url=https://sumasaas.jfrog.io/artifactory/ --apikey=AKCp8ihLMESAg4orKmLAikXT7odXVXUqD58eK8nkYV4LrtemKiNpWBnxe1ZB7cnQpMUHssGDC --interactive=false
 
       - run: chmod +x gradlew
       
-      - run: ./jfrog rt gradle-config --use-wrapper=true --repo-resolve=remote-backend-dev --server-id-resolve=Default-Server --repo-deploy=local-backend-dev --server-id-deploy=Default-Server
+      - run: jfrog rt gradle-config --use-wrapper=true --repo-resolve=remote-backend-dev --server-id-resolve=Default-Server --repo-deploy=local-backend-dev --server-id-deploy=Default-Server
 
-      - run: ./jfrog rt bp gradle clean build artifactoryPublish -b build.gradle
+      - run: jfrog rt bp gradle clean build artifactoryPublish -b build.gradle
 
 
 workflows:
