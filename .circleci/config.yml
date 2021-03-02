@@ -47,8 +47,8 @@ jobs:
               -Dsonar.host.url="https://sonarcloud.io/" \
               -Dsonar.login=$token \
               -Dsonar.java.binaries=. \
-              -Dsonar.organization="sebameruane" \
-              -Dsonar.projectKey="sebameruane_DevopsPrueba2" \
+              -Dsonar.organization=${CIRCLE_USERNAME} \
+              -Dsonar.projectKey=${CIRCLE_USERNAME}_${CIRCLE_PROJECT_REPONAME} \
               -Dsonar.sources="." \
               -Dsonar.exclusions="**/*.yaml,**/*.yml"
 
