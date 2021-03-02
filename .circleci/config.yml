@@ -11,7 +11,7 @@ jobs:
 
   publish-on-artifactory:
     docker:
-      - image: circleci/openjdk:11-jdk
+      - image: circleci/circleci/node:10
     working_directory: ~/repo
     steps:
       - checkout
