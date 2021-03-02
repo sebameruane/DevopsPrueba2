@@ -54,7 +54,7 @@ jobs:
       - checkout
       - run:
           name: Install jFrog CLI
-          command: sudo chmord -R 777 /var/opt/
+          command: sudo chmod -R 777 /var/opt/
           
       - run: curl -fL https://getcli.jfrog.io | sh
 
