@@ -29,8 +29,6 @@ jobs:
               echo "CLI exists, skipping install"
             fi
       - run: cd /usr/local/bin
-      - run: chmod +x /usr/local/bin
-
       #- run: chmod +x ./jfrog
       #- run: gradle build
      
