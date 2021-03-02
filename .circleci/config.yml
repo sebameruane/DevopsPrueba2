@@ -9,43 +9,6 @@ jobs:
     steps:
       - checkout
 
-      # se descargan e instalan las dependencias
-      - run:
-          name: "Setup environment"
-          command: |
-            apk update
-            apk add gradle
-            apk add --no-cache nodejs zip openjdk11-jre-headless
-            apk add curl
-            apk add jq
-            # se descargan e instalan las dependencias
-      - run:
-          name: "compile project"
-          command: |
-            gradle clean build test jacocoTestReport
-            
-      # se descarga el cliente de scan de sonarqube
-      - run:
-          name: "Install Sonarqube scanner"
-          command: |
-            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873.zip
-            unzip sonar-scanner-cli-4.2.0.1873.zip
-
-# se ejecuta el análisis invocando al cliente y especificando como argumentos y como variables de entorno (especificadas en CCI)
-#${CIRCLE_USERNAME}_${CIRCLE_PROJECT_REPONAME}
-      - run:
-          name: Code analysis
-          command: |
-            export SONAR_RUNNER_OPTS="-Xms1024m -Xmx4096m"
-            eval ./sonar-scanner-4.2.0.1873/bin/sonar-scanner \
-              -Dsonar.host.url="https://sonarcloud.io/" \
-              -Dsonar.login=$token \
-              -Dsonar.java.binaries=. \
-              -Dsonar.organization=${CIRCLE_USERNAME} \
-              -Dsonar.projectKey=${CIRCLE_USERNAME}_${CIRCLE_PROJECT_REPONAME} \
-              -Dsonar.sources="." \
-              -Dsonar.exclusions="**/*.yaml,**/*.yml"
-
   publish-on-artifactory:
     docker:
       - image: circleci/openjdk:11-jdk
@@ -54,7 +17,7 @@ jobs:
       - checkout
       - run:
           name: Install jFrog CLI
-          command: wget https://dl.bintray.com/jfrog/jfrog-cli-go/1.7.1/jfrog-cli-linux-amd64/jfrog
+          command: wget https://dl.bintray.com/jfrog/jfrog-cli-go/1.9.0/jfrog-cli-linux-amd64/jfrog
 
       - run: chmod +x ./jfrog
       - run: gradle build
