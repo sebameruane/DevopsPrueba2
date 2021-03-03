@@ -1,13 +1,7 @@
 version: 2.1
-
-workflows:
-  build:
-    jobs:
-      - build:
-          context:
-            - sonarCloud
 orbs:
-  artifactory-orb: jfrog/artifactory-orb@1.0.1
+  artifactory: circleci/artifactory@1.0.0
+  aws-ecr: circleci/aws-ecr@6.15.3
 jobs:
   build:
     docker:
@@ -15,69 +9,39 @@ jobs:
     steps:
       - checkout
 
-      # se descargan e instalan las dependencias
-      - run:
-          name: "Setup environment"
-          command: |
-            apk update
-            apk add gradle
-            apk add --no-cache nodejs zip openjdk11-jre-headless
-            apk add curl
-            apk add jq
-            # se descargan e instalan las dependencias
-      - run:
-          name: "compile project"
-          command: |
-            gradle clean build test jacocoTestReport
-            
-      # se descarga el cliente de scan de sonarqube
-      - run:
-          name: "Install Sonarqube scanner"
-          command: |
-            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.2.0.1873.zip
-            unzip sonar-scanner-cli-4.2.0.1873.zip
-
-# se ejecuta el análisis invocando al cliente y especificando como argumentos y como variables de entorno (especificadas en CCI)
-#-Dsonar.projectKey=${CIRCLE_PROJECT_USERNAME}_${CIRCLE_PROJECT_REPONAME} \
-#-Dsonar.organization="suma" \
-      - run:
-          name: Code analysis
-          command: |
-            export SONAR_RUNNER_OPTS="-Xms1024m -Xmx4096m"
-            eval ./sonar-scanner-4.2.0.1873/bin/sonar-scanner \
-              -Dsonar.host.url="https://sonarcloud.io/" \
-              -Dsonar.login=$token \
-              -Dsonar.java.binaries=. \
-              -Dsonar.organization="sebameruane" \
-              -Dsonar.projectKey="sebameruane_DevopsPrueba2" \
-              -Dsonar.sources="." \
-              -Dsonar.exclusions="**/*.yaml,**/*.yml"
-
-publish-on-artifactory:
+  publish-on-artifactory:
     docker:
-      - image: circleci/openjdk:11-jdk
-
+      - image: alpine:latest
     working_directory: ~/repo
-
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            - v1-dependencies-
-      
       - run:
           name: Install jFrog CLI
-          command: curl -fL https://getcli.jfrog.io | sh
+          command: |
+            apk add curl
+            apk add gradle
+            apk add openjdk11
+            gradle build
+     
+      - run: curl -u service-backend:AKCp8ihLMESAg4orKmLAikXT7odXVXUqD58eK8nkYV4LrtemKiNpWBnxe1ZB7cnQpMUHssGDC --ssl-no-revoke -v -X PUT "https://sumasaas.jfrog.io/artifactory/example-repo-local/" -T  "./build/libs/*.jar"
+      #- run: jfrog rt c --user=service-backend --url=https://sumasaas.jfrog.io/artifactory/ --apikey=AKCp8ihLMESAg4orKmLAikXT7odXVXUqD58eK8nkYV4LrtemKiNpWBnxe1ZB7cnQpMUHssGDC --interactive=false
 
-      - run: gradle build
-
-      - run: ./jfrog rt config --url $ARTIFACTORY_URL --user $ARTIFACTORY_USER --apikey $ARTIFACTORY_APIKEY --interactive=false
-
-      - run: chmod +x gradlew
+      #- run: chmod +x gradlew
       
-      - run: ./jfrog rt gradle-config --use-wrapper=true --repo-resolve=remote-backend-dev --server-id-resolve=Default-Server --repo-deploy=local-backend-dev --server-id-deploy=Default-Server
+      #- run: jfrog rt gradle-config --use-wrapper=true --repo-resolve=remote-backend-dev --server-id-resolve=Default-Server --repo-deploy=local-backend-dev --server-id-deploy=Default-Server
 
-      - run: ./jfrog rt gradle clean build artifactoryPublish -b build.gradle
-            
+      #- run: jfrog rt bp gradle clean build artifactoryPublish -b build.gradle
+
+
+workflows:
+  build_and_test:
+    jobs:
+      - build:
+          context:
+            - sonarCloud
+      - publish-on-artifactory:
+         requires:
+            - build
+         filters:
+            branches:
+              only: main
