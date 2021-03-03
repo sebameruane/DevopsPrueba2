@@ -19,9 +19,6 @@ jobs:
           name: Install jFrog CLI
           command: |
             apk add curl
-            apk add gradle
-            apk add openjdk11
-            gradle build
      
       - run: curl -u service-backend:AKCp8ihLMESAg4orKmLAikXT7odXVXUqD58eK8nkYV4LrtemKiNpWBnxe1ZB7cnQpMUHssGDC --ssl-no-revoke -v -X PUT "https://sumasaas.jfrog.io/artifactory/example-repo-local/" -T  "./build/libs/*.jar"
       #- run: jfrog rt c --user=service-backend --url=https://sumasaas.jfrog.io/artifactory/ --apikey=AKCp8ihLMESAg4orKmLAikXT7odXVXUqD58eK8nkYV4LrtemKiNpWBnxe1ZB7cnQpMUHssGDC --interactive=false
